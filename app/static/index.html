@@ -3,74 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Integration Copilot — AI-Powered Business API Assistant</title>
+  <title>Integration Copilot — Autonomous Business API Assistant</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <div class="app-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar / Control Panel -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          <!-- Custom AI Neural Core SVG -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
           </svg>
         </div>
         <div class="brand-text">
           <h2>Integration Copilot</h2>
-          <span class="badge badge-subtle">MCP + Tool Calling</span>
+          <span class="badge badge-accent">MCP Architecture</span>
         </div>
       </div>
 
-      <div class="system-status-card">
-        <h3>System Readiness</h3>
-        <div class="status-indicator-list">
-          <div class="status-item">
-            <span class="status-dot online" id="status-db-dot"></span>
-            <span class="status-label">SQLite Database</span>
-            <span class="status-val" id="status-db-val">Connected</span>
+      <!-- Navigation Tabs: Chat vs Capabilities -->
+      <div class="nav-segmented-control">
+        <button class="nav-tab active" id="tab-btn-chat" data-tab="chat">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Console
+        </button>
+        <button class="nav-tab" id="tab-btn-tools" data-tab="tools">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          MCP Tools (13)
+        </button>
+      </div>
+
+      <!-- Tab Content: System & Engine Settings -->
+      <div class="tab-pane active" id="pane-chat-controls">
+        <!-- Live System Telemetry Card -->
+        <div class="card telemetry-card">
+          <div class="card-header">
+            <span class="section-title">SYSTEM TELEMETRY</span>
+            <span class="pulse-indicator"></span>
           </div>
-          <div class="status-item">
-            <span class="status-dot online" id="status-mcp-dot"></span>
-            <span class="status-label">MCP Server</span>
-            <span class="status-val" id="status-mcp-val">13 Tools</span>
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <span class="telemetry-label">DATABASE</span>
+              <span class="telemetry-val" id="status-db-val">SQLite Connected</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">MCP SERVER</span>
+              <span class="telemetry-val" id="status-mcp-val">13 Tools Ready</span>
+            </div>
+            <div class="telemetry-item full-width">
+              <span class="telemetry-label">ACTIVE ENGINE</span>
+              <span class="telemetry-val highlight" id="status-engine-val">Built-in Resilient</span>
+            </div>
           </div>
-          <div class="status-item">
-            <span class="status-dot" id="status-llm-dot"></span>
-            <span class="status-label">LLM Provider</span>
-            <span class="status-val" id="status-llm-val">Checking...</span>
+        </div>
+
+        <!-- AI Engine Selector (Allows User to Switch or Add Keys) -->
+        <div class="card engine-card">
+          <div class="card-header">
+            <span class="section-title">AI INFERENCE ENGINE</span>
+            <button class="btn-icon" id="toggle-engine-btn" title="Toggle Engine Settings">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="engine-options">
+            <label class="engine-radio-card active">
+              <input type="radio" name="engine-select" value="mock" checked>
+              <div class="radio-content">
+                <div class="radio-header">
+                  <span class="engine-name">Built-in Copilot</span>
+                  <span class="badge badge-success">Guaranteed</span>
+                </div>
+                <p class="engine-desc">100% Free, zero setup, executes all 13 tools & write confirmations.</p>
+              </div>
+            </label>
+
+            <label class="engine-radio-card">
+              <input type="radio" name="engine-select" value="groq">
+              <div class="radio-content">
+                <div class="radio-header">
+                  <span class="engine-name">Groq Cloud (Llama 3.3)</span>
+                  <span class="badge badge-subtle">Free Cloud</span>
+                </div>
+                <p class="engine-desc">Ultra-fast cloud LLM inference using Groq free tier.</p>
+              </div>
+            </label>
+
+            <label class="engine-radio-card">
+              <input type="radio" name="engine-select" value="custom">
+              <div class="radio-content">
+                <div class="radio-header">
+                  <span class="engine-name">Local Ollama / Custom API</span>
+                  <span class="badge badge-subtle">BYOK</span>
+                </div>
+                <p class="engine-desc">Connect to local Ollama on host or OpenRouter.</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Collapsible Dynamic Config Panel -->
+          <div class="engine-config-fields" id="engine-config-fields" style="display: none;">
+            <div class="input-field-group" id="field-groq-key" style="display: none;">
+              <label for="groq-api-key-input">Groq API Key</label>
+              <input type="password" id="groq-api-key-input" placeholder="gsk_... (leave empty to use server default)">
+            </div>
+
+            <div class="input-field-group" id="field-groq-model" style="display: none;">
+              <label for="groq-model-select">Groq Model</label>
+              <select id="groq-model-select" class="form-select">
+                <option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile (Flagship)</option>
+                <option value="llama3-70b-8192">llama3-70b-8192</option>
+                <option value="llama3-8b-8192">llama3-8b-8192</option>
+                <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+              </select>
+            </div>
+
+            <div class="input-field-group" id="field-custom-url" style="display: none;">
+              <label for="custom-url-input">Endpoint URL</label>
+              <input type="text" id="custom-url-input" placeholder="http://localhost:11434/v1">
+            </div>
+
+            <div class="input-field-group" id="field-custom-model" style="display: none;">
+              <label for="custom-model-input">Model Name</label>
+              <input type="text" id="custom-model-input" placeholder="qwen3:4b">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="auth-config-section">
-        <label for="auth-token-input">API Bearer Token</label>
-        <div class="token-input-group">
-          <input type="password" id="auth-token-input" value="dev-secret-token-12345" placeholder="Enter Bearer Token">
-          <button id="toggle-token-btn" title="Toggle Visibility">👁</button>
+        <!-- Authentication Header -->
+        <div class="card auth-card">
+          <label for="auth-token-input">API BEARER TOKEN</label>
+          <div class="input-with-button">
+            <input type="password" id="auth-token-input" value="dev-secret-token-12345" placeholder="Enter Bearer Token">
+            <button id="toggle-token-btn" class="btn-icon" title="Toggle Visibility">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
-        <p class="helper-text">Local dev authentication header.</p>
-      </div>
 
-      <div class="sample-queries-section">
-        <h3>Example Inquiries</h3>
-        <div class="chips-container">
-          <button class="chip" data-query="Show me all failed orders.">❌ Show failed orders</button>
-          <button class="chip" data-query="Find customer CUST-1004.">👤 Find customer CUST-1004</button>
-          <button class="chip" data-query="Show me the orders for customer CUST-1004.">📦 Orders for CUST-1004</button>
-          <button class="chip" data-query="What are the top 5 products by sales?">🏆 Top 5 products</button>
-          <button class="chip" data-query="Give me a summary of today's order activity.">📊 Order activity summary</button>
-          <button class="chip" data-query="Create a support ticket for customer CUST-1004 saying their order is delayed.">🎫 Create support ticket</button>
-          <button class="chip" data-query="Find failed orders for customer CUST-1004 and create a high-priority support ticket for the latest one.">⚡ Multi-step workflow</button>
+        <!-- Quick Action Queries -->
+        <div class="quick-inquiries">
+          <span class="section-title">QUICK INQUIRIES</span>
+          <div class="chips-container">
+            <button class="chip" data-query="Show me all failed orders.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              Failed Orders
+            </button>
+            <button class="chip" data-query="Find customer CUST-1004.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Lookup CUST-1004
+            </button>
+            <button class="chip" data-query="Show me the orders for customer CUST-1004.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              Orders for CUST-1004
+            </button>
+            <button class="chip" data-query="What are the top 5 products by sales?">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              Top 5 Products
+            </button>
+            <button class="chip" data-query="Give me a summary of today's order activity.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Order Activity Summary
+            </button>
+            <button class="chip" data-query="Create a support ticket for customer CUST-1004 saying their order is delayed.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Create Ticket (Confirmation)
+            </button>
+            <button class="chip" data-query="Find failed orders for customer CUST-1004 and create a high-priority support ticket for the latest one.">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              Multi-Step Workflow
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-links">
+          <a href="/docs" target="_blank" class="ext-link">
+            <span>Swagger API Documentation</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+          <a href="/metrics" target="_blank" class="ext-link">
+            <span>Prometheus Telemetry</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
         </div>
       </div>
 
-      <div class="sidebar-footer">
-        <a href="/docs" target="_blank" class="link-btn">Swagger API Docs ↗</a>
-        <a href="/metrics" target="_blank" class="link-btn">Prometheus Metrics ↗</a>
+      <!-- Tab Content: Capabilities & Tools Catalog -->
+      <div class="tab-pane" id="pane-tools-catalog">
+        <div class="catalog-intro">
+          <p>These 13 tools are dynamically exposed by the <strong>Model Context Protocol Server</strong> directly to the LLM agent.</p>
+        </div>
+
+        <div class="tool-list">
+          <div class="tool-group">
+            <span class="tool-group-title">CUSTOMER DOMAIN</span>
+            <div class="tool-card" data-sample="Find customer CUST-1004.">
+              <div class="tool-card-header">
+                <code>get_customer</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Retrieve customer record by ID.</p>
+            </div>
+            <div class="tool-card" data-sample="Find customer named Sarah Wilson.">
+              <div class="tool-card-header">
+                <code>search_customers</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Search customers by name or email query.</p>
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <span class="tool-group-title">ORDER DOMAIN</span>
+            <div class="tool-card" data-sample="Show me all failed orders.">
+              <div class="tool-card-header">
+                <code>search_orders</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Filter orders by status, date, or amount.</p>
+            </div>
+            <div class="tool-card" data-sample="Look up order ORD-1015.">
+              <div class="tool-card-header">
+                <code>get_order</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Fetch order details and line items.</p>
+            </div>
+            <div class="tool-card" data-sample="Show me the orders for customer CUST-1004.">
+              <div class="tool-card-header">
+                <code>get_customer_orders</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>List all orders for a specific customer.</p>
+            </div>
+            <div class="tool-card" data-sample="Place an order for customer CUST-1001 for product PROD-1001 with quantity 2.">
+              <div class="tool-card-header">
+                <code>create_order</code>
+                <span class="badge badge-write">WRITE • GUARDED</span>
+              </div>
+              <p>Create new order. Requires human confirmation.</p>
+            </div>
+            <div class="tool-card" data-sample="Cancel order ORD-1015.">
+              <div class="tool-card-header">
+                <code>update_order_status</code>
+                <span class="badge badge-write">WRITE • GUARDED</span>
+              </div>
+              <p>Update order status. Requires human confirmation.</p>
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <span class="tool-group-title">SUPPORT DESK DOMAIN</span>
+            <div class="tool-card" data-sample="Create a support ticket for customer CUST-1004 saying their order is delayed.">
+              <div class="tool-card-header">
+                <code>create_support_ticket</code>
+                <span class="badge badge-write">WRITE • GUARDED</span>
+              </div>
+              <p>Draft customer support ticket. Requires confirmation.</p>
+            </div>
+            <div class="tool-card" data-sample="Show all open support tickets.">
+              <div class="tool-card-header">
+                <code>list_support_tickets</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Query tickets by status, priority, or customer.</p>
+            </div>
+            <div class="tool-card" data-sample="Check status of ticket TCK-1001.">
+              <div class="tool-card-header">
+                <code>get_support_ticket</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Fetch details of an individual ticket.</p>
+            </div>
+          </div>
+
+          <div class="tool-group">
+            <span class="tool-group-title">ANALYTICS DOMAIN</span>
+            <div class="tool-card" data-sample="Give me a summary of today's order activity.">
+              <div class="tool-card-header">
+                <code>get_order_statistics</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Aggregate counts, revenue, and AOV.</p>
+            </div>
+            <div class="tool-card" data-sample="What are the top 5 products by sales?">
+              <div class="tool-card-header">
+                <code>get_top_products</code>
+                <span class="badge badge-read">READ</span>
+              </div>
+              <p>Rank top products by revenue and units.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -78,88 +322,131 @@
     <main class="chat-workspace">
       <header class="workspace-header">
         <div class="header-info">
+          <div class="header-badge">
+            <span class="indicator-pulse"></span>
+            <span>ENTERPRISE COPILOT CONSOLE</span>
+          </div>
           <h1>Business Operations Assistant</h1>
-          <p>Autonomous LLM agent executing structured enterprise tools via Model Context Protocol</p>
         </div>
         <div class="header-actions">
           <button id="reset-chat-btn" class="btn btn-secondary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
               <path d="M3 3v5h5"/>
             </svg>
-            Reset Chat
+            Clear Session
           </button>
         </div>
       </header>
 
       <!-- Message History Container -->
       <section class="messages-container" id="messages-container">
+        <!-- Welcome Card -->
         <div class="message assistant welcome-card">
-          <div class="avatar">🤖</div>
-          <div class="content">
-            <h3>Welcome to Integration Copilot</h3>
-            <p>I am your business integration assistant. I interact directly with your database, order management, and customer support systems via <strong>MCP tools</strong>.</p>
-            <div class="features-grid">
-              <div class="feat-item">
-                <span class="feat-icon">🔍</span>
+          <div class="avatar-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="bubble-content">
+            <div class="welcome-header">
+              <h3>Enterprise Integration Copilot Ready</h3>
+              <span class="status-chip">Autonomous Agent Connected</span>
+            </div>
+            <p class="welcome-desc">
+              I interact directly with your database, order fulfillment, and support desks using 
+              <strong>Model Context Protocol (MCP)</strong> tools. State-mutating writes require your explicit confirmation.
+            </p>
+
+            <div class="feature-highlights">
+              <div class="highlight-item">
+                <div class="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
                 <div>
                   <strong>Live Database Queries</strong>
                   <span>Find customers, track orders, inspect inventory.</span>
                 </div>
               </div>
-              <div class="feat-item">
-                <span class="feat-icon">🛡️</span>
+
+              <div class="highlight-item">
+                <div class="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
                 <div>
                   <strong>Human-in-the-Loop Confirmation</strong>
-                  <span>Write operations require your explicit consent before modifying data.</span>
+                  <span>Write actions require your explicit consent before modifying data.</span>
                 </div>
               </div>
-              <div class="feat-item">
-                <span class="feat-icon">⚡</span>
+
+              <div class="highlight-item">
+                <div class="highlight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </div>
                 <div>
-                  <strong>Observability & Traceability</strong>
+                  <strong>Observability & Tracing</strong>
                   <span>Inspect latency, tool arguments, and execution steps on every call.</span>
                 </div>
               </div>
             </div>
-            <p class="hint">Type an instruction below or click any example query from the sidebar to get started.</p>
+
+            <div class="welcome-footer">
+              <span>Try clicking a sample inquiry from the sidebar or type an instruction below.</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Floating Confirmation Dialog Anchor (when active) -->
-      <div id="confirmation-banner" class="confirmation-banner hidden">
-        <div class="conf-header">
-          <span class="conf-badge">Confirmation Required</span>
-          <span class="conf-tool" id="conf-tool-name">Tool</span>
-        </div>
-        <div class="conf-body" id="conf-prompt-text">
-          Do you want to proceed with this operation?
-        </div>
-        <div class="conf-actions">
-          <button id="conf-approve-btn" class="btn btn-primary">✓ Confirm & Apply</button>
-          <button id="conf-reject-btn" class="btn btn-danger">✕ Cancel</button>
+      <!-- Persistent Confirmation Bar -->
+      <div class="confirmation-banner" id="confirmation-banner" style="display: none;">
+        <div class="banner-body">
+          <div class="banner-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="banner-details">
+            <div class="banner-title">
+              <strong>SECURITY AUTHORIZATION REQUIRED</strong>
+              <code id="conf-tool-name">create_support_ticket</code>
+            </div>
+            <p id="conf-prompt-text">Do you want to execute this action?</p>
+          </div>
+          <div class="banner-buttons">
+            <button class="btn btn-success" id="conf-approve-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Confirm Action
+            </button>
+            <button class="btn btn-secondary" id="conf-reject-btn">Cancel</button>
+          </div>
         </div>
       </div>
 
-      <!-- Input Form -->
-      <footer class="input-footer">
-        <form id="chat-form" class="chat-input-form">
-          <div class="input-wrapper">
-            <textarea
-              id="prompt-input"
-              rows="1"
-              placeholder="Ask a question or request an operation (e.g. 'Show me all failed orders')..."
-              required
-            ></textarea>
-            <button type="submit" id="send-btn" class="btn btn-send" title="Send Request">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- Chat Input Area -->
+      <footer class="workspace-footer">
+        <form class="chat-form" id="chat-form">
+          <div class="input-shell">
+            <input 
+              type="text" 
+              id="prompt-input" 
+              placeholder="Ask a question or request an action (e.g. 'Show me all failed orders')..." 
+              autocomplete="off"
+            />
+            <button type="submit" id="send-btn" class="send-btn" title="Send Instruction">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
               </svg>
             </button>
           </div>
         </form>
+        <div class="footer-meta">
+          <span>Protected by Confirmation State Machine • Step Limit: 8 • Zero Cloud API Costs</span>
+        </div>
       </footer>
     </main>
   </div>

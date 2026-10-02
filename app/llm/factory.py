@@ -25,7 +25,7 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
             else app_settings.openai_api_base
         )
         model = (
-            "llama-3.1-8b-instant"
+            "llama-3.3-70b-versatile"
             if app_settings.llm_provider == "groq" and app_settings.llm_model == "qwen3:4b"
             else app_settings.llm_model
         )

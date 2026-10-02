@@ -23,6 +23,15 @@ class AgentRequest(BaseModel):
     confirmed: Optional[bool] = Field(
         default=None, description="User confirmation decision (true=approve, false=cancel)"
     )
+    llm_provider: Optional[str] = Field(
+        default=None,
+        description="Override LLM provider ('mock', 'groq', 'ollama', 'openai_compatible')",
+    )
+    llm_model: Optional[str] = Field(default=None, description="Override model name")
+    api_key: Optional[str] = Field(
+        default=None, description="User-supplied API key for cloud provider"
+    )
+    api_base: Optional[str] = Field(default=None, description="User-supplied custom API base URL")
 
 
 class ToolTraceEntry(BaseModel):
