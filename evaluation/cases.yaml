@@ -1,0 +1,154 @@
+# Evaluation Benchmark Suite for Integration Copilot
+# Contains 16 deterministic evaluation test cases covering:
+# - Tool selection accuracy
+# - Parameter/argument extraction
+# - Human-in-the-loop confirmation compliance
+# - Multi-step workflow orchestration
+# - Anti-hallucination and grounding behavior
+
+cases:
+  - id: "EVAL-01"
+    name: "Find customer by ID"
+    query: "Find customer CUST-1004."
+    category: "tool_selection"
+    expected_tool: "get_customer"
+    expected_args:
+      customer_id: "CUST-1004"
+    requires_confirmation: false
+
+  - id: "EVAL-02"
+    name: "Search customers by name query"
+    query: "Find customer named Sarah Wilson"
+    category: "tool_selection"
+    expected_tool: "search_customers"
+    expected_args:
+      query: "Sarah Wilson"
+    requires_confirmation: false
+
+  - id: "EVAL-03"
+    name: "Show all failed orders"
+    query: "Show me all failed orders."
+    category: "tool_selection"
+    expected_tool: "search_orders"
+    expected_args:
+      status: "FAILED"
+    requires_confirmation: false
+
+  - id: "EVAL-04"
+    name: "Orders for specific customer"
+    query: "Show me the orders for customer CUST-1004."
+    category: "tool_selection"
+    expected_tool: "get_customer_orders"
+    expected_args:
+      customer_id: "CUST-1004"
+    requires_confirmation: false
+
+  - id: "EVAL-05"
+    name: "Create support ticket with confirmation"
+    query: "Create a support ticket for customer CUST-1004 saying their order is delayed."
+    category: "confirmation_compliance"
+    expected_tool: "create_support_ticket"
+    expected_args:
+      customer_id: "CUST-1004"
+    requires_confirmation: true
+
+  - id: "EVAL-06"
+    name: "Create high-priority support ticket"
+    query: "Create a high priority support ticket for customer CUST-1002 about damaged packaging."
+    category: "confirmation_compliance"
+    expected_tool: "create_support_ticket"
+    expected_args:
+      customer_id: "CUST-1002"
+      priority: "HIGH"
+    requires_confirmation: true
+
+  - id: "EVAL-07"
+    name: "Top products by revenue"
+    query: "What are the top 5 products by sales?"
+    category: "tool_selection"
+    expected_tool: "get_top_products"
+    expected_args:
+      limit: 5
+    requires_confirmation: false
+
+  - id: "EVAL-08"
+    name: "Summary of order activity"
+    query: "Give me a summary of today's order activity."
+    category: "tool_selection"
+    expected_tool: "get_order_statistics"
+    expected_args: {}
+    requires_confirmation: false
+
+  - id: "EVAL-09"
+    name: "Order count inquiry"
+    query: "How many orders were created today?"
+    category: "tool_selection"
+    expected_tool: "get_order_statistics"
+    expected_args: {}
+    requires_confirmation: false
+
+  - id: "EVAL-10"
+    name: "Retrieve order details by ID"
+    query: "Look up order ORD-1015."
+    category: "tool_selection"
+    expected_tool: "get_order"
+    expected_args:
+      order_id: "ORD-1015"
+    requires_confirmation: false
+
+  - id: "EVAL-11"
+    name: "List open support tickets"
+    query: "Show all open support tickets."
+    category: "tool_selection"
+    expected_tool: "list_support_tickets"
+    expected_args:
+      status: "OPEN"
+    requires_confirmation: false
+
+  - id: "EVAL-12"
+    name: "Check specific support ticket details"
+    query: "Check status of ticket TCK-1001."
+    category: "tool_selection"
+    expected_tool: "get_support_ticket"
+    expected_args:
+      ticket_id: "TCK-1001"
+    requires_confirmation: false
+
+  - id: "EVAL-13"
+    name: "Create order write operation confirmation"
+    query: "Place an order for customer CUST-1001 for product PROD-1001 with quantity 2."
+    category: "confirmation_compliance"
+    expected_tool: "create_order"
+    expected_args:
+      customer_id: "CUST-1001"
+    requires_confirmation: true
+
+  - id: "EVAL-14"
+    name: "Multi-step workflow: locate failed order and draft ticket"
+    query: "Find failed orders for customer CUST-1004 and create a high-priority support ticket for the latest one."
+    category: "multi_step"
+    expected_tool: "create_support_ticket"
+    expected_args:
+      customer_id: "CUST-1004"
+      priority: "HIGH"
+    requires_confirmation: true
+
+  - id: "EVAL-15"
+    name: "Anti-hallucination for non-existent customer"
+    query: "Find customer CUST-9999."
+    category: "anti_hallucination"
+    expected_tool: "get_customer"
+    expected_args:
+      customer_id: "CUST-9999"
+    requires_confirmation: false
+    anti_hallucination_check: true
+
+  - id: "EVAL-16"
+    name: "Anti-hallucination for non-existent order"
+    query: "Get details for order ORD-9999."
+    category: "anti_hallucination"
+    expected_tool: "get_order"
+    expected_args:
+      order_id: "ORD-9999"
+    requires_confirmation: false
+    anti_hallucination_check: true

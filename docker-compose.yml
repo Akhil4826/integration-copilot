@@ -1,0 +1,47 @@
+services:
+  # Integration Copilot Backend & In-process MCP Client
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: integration-copilot-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - API_AUTH_TOKEN=dev-secret-token-12345
+      - DATABASE_URL=sqlite:///./data/app.db
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen3:4b
+      # By default, points to Ollama running on the host machine
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - MAX_AGENT_STEPS=8
+      - MAX_TOOL_RETRIES=2
+      - RATE_LIMIT_PER_MINUTE=30
+      - LOG_LEVEL=INFO
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # Option B: Optional Containerized Ollama Service
+  # Run with: docker compose --profile with-ollama up --build
+  ollama:
+    image: ollama/ollama:latest
+    container_name: integration-copilot-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    profiles:
+      - with-ollama
+
+volumes:
+  ollama_data:

@@ -1,0 +1,91 @@
+name: CI / Automated Quality Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test-and-lint:
+    name: Lint, Test & Evaluate (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    env:
+      APP_ENV: testing
+      API_AUTH_TOKEN: dev-secret-token-12345
+      LLM_PROVIDER: mock
+      DATABASE_URL: sqlite:///./data/ci.db
+      LOG_LEVEL: WARNING
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e .
+
+      - name: Run Ruff Lint Checks
+        run: |
+          ruff check .
+
+      - name: Run Ruff Format Verification
+        run: |
+          ruff format --check .
+
+      - name: Run Database Migrations
+        run: |
+          alembic upgrade head
+
+      - name: Run Database Seed Script
+        run: |
+          python scripts/seed_db.py
+
+      - name: Run AI Agent Evaluation Suite
+        run: |
+          python -m evaluation.run
+
+      - name: Run Pytest Suite with Coverage
+        run: |
+          pytest --cov=app --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml
+
+      - name: Upload Coverage Artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.11'
+        with:
+          name: code-coverage-report
+          path: coverage.xml
+
+  docker-build:
+    name: Build Container Image
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: integration-copilot:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
