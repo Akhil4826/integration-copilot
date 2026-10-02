@@ -23,9 +23,11 @@ class Settings(BaseSettings):
     admin_auth_token: str = "admin-secret-token-67890"
 
     # LLM Settings
-    llm_provider: Literal["ollama", "mock"] = "ollama"
+    llm_provider: Literal["ollama", "mock", "groq", "openai_compatible"] = "ollama"
     llm_model: str = "qwen3:4b"
     ollama_base_url: str = "http://localhost:11434"
+    groq_api_key: str = ""
+    openai_api_base: str = "https://api.groq.com/openai/v1"
     llm_timeout_seconds: float = 60.0
 
     # Database Settings

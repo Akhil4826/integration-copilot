@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: integration-copilot
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install -e . && alembic upgrade head && python scripts/seed_db.py"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LLM_PROVIDER
+        value: mock
+      - key: API_AUTH_TOKEN
+        value: dev-secret-token-12345
+      - key: DATABASE_URL
+        value: sqlite:///./data/app.db
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "30"
+      - key: MAX_AGENT_STEPS
+        value: "8"
+      - key: MAX_TOOL_RETRIES
+        value: "2"
+      - key: LOG_LEVEL
+        value: INFO
