@@ -66,9 +66,15 @@ class OpenAICompatibleProvider(LLMProvider):
             try:
                 async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
                     resp = await client.post(url, headers=headers, json=payload)
-                    resp.raise_for_status()
+                    if resp.is_error:
+                        err_text = resp.text
+                        logger.error(
+                            f"Cloud LLM HTTP {resp.status_code} Error: {err_text}",
+                            extra={"status_code": resp.status_code, "response_body": err_text},
+                        )
+                        raise ConnectionError(f"Cloud LLM error ({resp.status_code}): {err_text}")
                     return cast(Dict[str, Any], resp.json())
-            except (httpx.ConnectError, httpx.TimeoutException, httpx.HTTPStatusError) as exc:
+            except (httpx.ConnectError, httpx.TimeoutException) as exc:
                 last_error = exc
                 if attempt < self.max_retries:
                     backoff = 0.5 * (2**attempt)
@@ -118,16 +124,32 @@ class OpenAICompatibleProvider(LLMProvider):
 
         formatted_tools = []
         for t in tools:
-            formatted_tools.append(
-                {
-                    "type": "function",
-                    "function": {
-                        "name": t.get("name"),
-                        "description": t.get("description", ""),
-                        "parameters": t.get("parameters", {"type": "object", "properties": {}}),
-                    },
-                }
-            )
+            if "function" in t:
+                # Already wrapped in OpenAI tool format {"type": "function", "function": {...}}
+                fn = t["function"]
+                formatted_tools.append(
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": fn.get("name"),
+                            "description": fn.get("description", ""),
+                            "parameters": fn.get(
+                                "parameters", {"type": "object", "properties": {}}
+                            ),
+                        },
+                    }
+                )
+            else:
+                formatted_tools.append(
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": t.get("name"),
+                            "description": t.get("description", ""),
+                            "parameters": t.get("parameters", {"type": "object", "properties": {}}),
+                        },
+                    }
+                )
 
         payload = {
             "model": self.model,
